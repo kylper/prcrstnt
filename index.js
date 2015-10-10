@@ -14,9 +14,10 @@ buttons.ActionButton({
 /* Variables */
 var vars = {
   newSite: "www.something.com",
-  acceptedSiteList: ["resource://prcrstnt/data/interface/index.html", "developer.mozilla.org", "developer.apple.com"],
+  acceptedSiteList: ["resource://prcrstnt/data/interface/index.html", "https://developer.mozilla.org/en-US/", "https://developer.apple.com/"],
   comparedSitesNum: null
 };
+/* ISSUE WITH VARS: STRING COMPARISON NEEDS TO BE WITH THE BASE SITE ONLY, OTHERWISE THE EXACT URL AT THE END OF ALL REDIRECTS IS NEEDED */
 
 /* Functions */
 function openInterface(){
@@ -49,17 +50,26 @@ initialize();
 /* When a new site is loaded, put the special script on the page! */
 tabs.on('ready', function(tab){
   console.log("VARS: " + vars.acceptedSiteList);
+
+  //acceptedSiteList.includes()
+
+
   for (var i=0; i < 3; i++){
     if (tab.url != vars.acceptedSiteList[i]){
-      console.log("Added 1, now:" + vars.comparedSitesNum);
       vars.comparedSitesNum++;
+      console.log("Added 1, now:" + vars.comparedSitesNum);
     }
   }
   console.log(vars.comparedSitesNum);
-  if (vars.comparedSitesNum = 6){
+  if (vars.comparedSitesNum == 3){
     worker = tab.attach({
       contentScriptFile: [self.data.url("jquery.min.js"), self.data.url("siteEvalMod.js")]
     });
     worker.port.emit("alert", "Blocked");
+    vars.comparedSitesNum = 0;
+    console.log("Blocked: " + vars.comparedSitesNum);
+  } else {
+    vars.comparedSitesNum = 0;
+    console.log("Not Blocked: " + vars.comparedSitesNum);
   }
 });
