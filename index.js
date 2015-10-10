@@ -7,7 +7,7 @@ var buttons = require('sdk/ui/button/action');
 buttons.ActionButton({
   id: "list-tabs",
   label: "List Tabs",
-  icon: "./interface.png",
+  icon: "./logo.png",
   onClick: openInterface
 });
 
@@ -28,15 +28,11 @@ function startServer(){
 
 }
 
-function blockPage(){
-  pageMod.PageMod({
-      include: "*",
-      contentScriptFile: [self.data.url("jquery.min.js"), self.data.url("siteEvalMod.js")],
-      onAttach: function(worker) {
-          console.log(site);
-          worker.port.emit("siteEval", site);
-      }
+function blockSite(tab){
+  worker = tab.attach({
+    contentScriptFile: [self.data.url("jquery.min.js"), self.data.url("siteEvalMod.js")]
   });
+  worker.port.emit("alert", "Blocked");
 }
 
 function initialize(){
@@ -49,27 +45,10 @@ initialize();
 
 /* When a new site is loaded, put the special script on the page! */
 tabs.on('ready', function(tab){
-  console.log("VARS: " + vars.acceptedSiteList);
+  var siteList = vars.acceptedSiteList;
 
-  //acceptedSiteList.includes()
-
-
-  for (var i=0; i < 3; i++){
-    if (tab.url != vars.acceptedSiteList[i]){
-      vars.comparedSitesNum++;
-      console.log("Added 1, now:" + vars.comparedSitesNum);
-    }
+  if(siteList.indexOf(tab.url.valueOf()) == -1){
+    blockSite(tab);
   }
-  console.log(vars.comparedSitesNum);
-  if (vars.comparedSitesNum == 3){
-    worker = tab.attach({
-      contentScriptFile: [self.data.url("jquery.min.js"), self.data.url("siteEvalMod.js")]
-    });
-    worker.port.emit("alert", "Blocked");
-    vars.comparedSitesNum = 0;
-    console.log("Blocked: " + vars.comparedSitesNum);
-  } else {
-    vars.comparedSitesNum = 0;
-    console.log("Not Blocked: " + vars.comparedSitesNum);
-  }
+
 });
