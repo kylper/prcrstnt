@@ -20,5 +20,5 @@ function listTabs(tabs){
 
 
 self.port.on('alert', function(message){
-  $("body").html("<p>" + message + "</p>");
+  $("body").html('<html><head><title>Site Blocked | PRCRSTNT</title><link rel="stylesheet" type="text/css" href="resource://prcrstnt/data/interface/style.css"></link></head><body><div class="topBar"><img id="topIcon" src="resource://prcrstnt/data/interface/logo.svg" /><h1>PRCRSTNT</h1></div><h1 style="padding-top: 50px; text-align: center;">Sorry!</h1><p style="text-align: center;">This site is blocked until you finish your task!</p></body></html>');
 });
